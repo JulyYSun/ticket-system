@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.ticket.mapper.TicketMapper">
+    
+    <resultMap type="Ticket" id="TicketResult">
+        <result property="id"    column="id"    />
+        <result property="applicantName"    column="applicant_name"    />
+        <result property="question1"    column="question1"    />
+        <result property="answer1"    column="answer1"    />
+        <result property="question2"    column="question2"    />
+        <result property="answer2"    column="answer2"    />
+        <result property="canceled"    column="canceled"    />
+    </resultMap>
+
+    <sql id="selectTicketVo">
+        select id, applicant_name, question1, answer1, question2, answer2, canceled from ticket
+    </sql>
+
+    <select id="selectTicketList" parameterType="Ticket" resultMap="TicketResult">
+        <include refid="selectTicketVo"/>
+        <where>  
+            <if test="applicantName != null  and applicantName != ''"> and applicant_name like concat('%', #{applicantName}, '%')</if>
+            <if test="question1 != null  and question1 != ''"> and question1 = #{question1}</if>
+            <if test="answer1 != null  and answer1 != ''"> and answer1 = #{answer1}</if>
+            <if test="question2 != null  and question2 != ''"> and question2 = #{question2}</if>
+            <if test="answer2 != null  and answer2 != ''"> and answer2 = #{answer2}</if>
+            <if test="canceled != null "> and canceled = #{canceled}</if>
+        </where>
+    </select>
+    
+    <select id="selectTicketById" parameterType="Integer" resultMap="TicketResult">
+        <include refid="selectTicketVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTicket" parameterType="Ticket">
+        insert into ticket
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="applicantName != null and applicantName != ''">applicant_name,</if>
+            <if test="question1 != null">question1,</if>
+            <if test="answer1 != null">answer1,</if>
+            <if test="question2 != null">question2,</if>
+            <if test="answer2 != null">answer2,</if>
+            <if test="canceled != null">canceled,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="applicantName != null and applicantName != ''">#{applicantName},</if>
+            <if test="question1 != null">#{question1},</if>
+            <if test="answer1 != null">#{answer1},</if>
+            <if test="question2 != null">#{question2},</if>
+            <if test="answer2 != null">#{answer2},</if>
+            <if test="canceled != null">#{canceled},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTicket" parameterType="Ticket">
+        update ticket
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applicantName != null and applicantName != ''">applicant_name = #{applicantName},</if>
+            <if test="question1 != null">question1 = #{question1},</if>
+            <if test="answer1 != null">answer1 = #{answer1},</if>
+            <if test="question2 != null">question2 = #{question2},</if>
+            <if test="answer2 != null">answer2 = #{answer2},</if>
+            <if test="canceled != null">canceled = #{canceled},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTicketById" parameterType="Integer">
+        delete from ticket where id = #{id}
+    </delete>
+
+    <delete id="deleteTicketByIds" parameterType="String">
+        delete from ticket where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
